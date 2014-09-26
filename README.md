@@ -1,4 +1,6 @@
-# Smart mower
+# Grassist
+
+_(an undeniably clever portmanteaux of “grass” and “assist”)_
 
 The challenge is to program a self-controlled lawnmower.
 
