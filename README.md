@@ -1,8 +1,6 @@
 # Grassist
 
-_(an undeniably clever portmanteaux of “grass” and “assist”)_
-
-The challenge is to program a self-controlled lawnmower.
+**Grassist** (an undeniably clever portmanteaux of _grass_ and _assist_) is a controller for an autonomous lawnmower.
 
 ## The lawnmower
 
@@ -19,17 +17,26 @@ The following status information can be queried:
   - `position` — the current position, relative to the lawnmower's "home" position, measured in feet. The first value is the longitude, with positions east of the starting position being positive and west being negative. The second value is the latitude, with north being positive and south being negative.
   - `heading` — the current heading. One of `"north"`, `"south"`, `"west"`, or `"east"`.
   - `rotorEnabled` — whether or not the rotor is powered on. `true` or `false`.
+  - `home` — whether or not the lawnmower is currently in its "home" position. `true` or `false`.
 
 ## Yards
 
 Yards can contain the following elements:
-  - **Long grass** — The lawnmower _must_ pass over all the long grass in the yard with the rotor powered on. When the lawnmower passes over a patch of long grass with the rotor powered on, the patch becomes short grass. (The lawnmower _may_ pass over long grass with the rotor powered off, but the patch will remain long grass when that happens.)
-  - **Short grass** — The lawnmower _may_ pass over short grass, with or without the rotor powered on.
-  - **Sidewalks** — The lawnmower _may_ pass over sidewalks, with or without the rotor powered on.
-  - **Mulch and gravel** — The lawnmower _may_ pass over mulch or gravel with rotor powered off, but it _must not_ pass over mulch or gravel with the rotor powered on.
-  - **Plants and flowers** — The lawnmower _must not_ attempt to pass over plants or flowers at all, regardless of whether or not the rotor is powered on.
+  - **Long grass** — The lawnmower can pass over long grass. If the lawnmower passes over a patch of long grass when the is rotor powered on, it will cut the grass patch, making it become short grass.
+  - **Short grass** — The lawnmower can pass over short grass.
+  - **Sidewalks** — The lawnmower can pass over sidewalks.
+  - **Mulch and gravel** — The lawnmower can pass over mulch or gravel with rotor powered off, but it _must not_ attempt to pass over mulch or gravel with the rotor powered on or the lawnmower will get damaged.
+  - **Plants and flowers** — The lawnmower _must not_ attempt to pass over plants or flowers at all, regardless of whether or not the rotor is powered on, or the lawnmower and/or landscaping will get damaged.
 
 The following yard information can be queried:
   - `bounds` — the extrema of the lawn, relative to the lawnmower's "home" position, measured in feet. The first and second values are the minimum (westernmost and southernmost) longitude and latitude, and the third and fourth values are the maximum (easternmost and northernmost) longitude and latitude.
   - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the lawnmower's "home" position, with positive longitude values to the east and positive latitude values to the north. One of `"long_grass"`, `"short_grass"`, `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"`.
   - `freshlyCut` — whether or not all of the long grass has been cut. `true` or `false`.
+
+## The challenge
+
+Implement the movement controller such that, given a yard, it plans a route satisfying the following conditions:
+  1. All the long grass in the yard gets cut.
+  2. The lawnmower is returned to its "home" position with its rotors powered off.
+  3. The lawnmower does not leave the bounds of the yard.
+  4. The lawnmower and landscaping do not get damaged.
