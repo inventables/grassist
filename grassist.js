@@ -30,3 +30,10 @@ console.log(lawnmower.rotorEnabled());
 lawnmower.stopRotor();
 console.log(lawnmower.rotorEnabled());
 
+var lawn = require('./lib/lawn.js')(["XXXXX", "X!!!X", "X .%X", "XXXXX"]);
+
+console.log(lawn.patchType(1, 1));
+console.log(lawn.patchType(1, 2));
+console.log(lawn.patchType(2, 2));
+console.log(lawn.patchType(3, 2));
+
