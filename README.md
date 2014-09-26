@@ -29,4 +29,4 @@ Yards can contain the following elements:
 
 The following yard information can be queried:
   - `bounds` — the extrema of the lawn, relative to the lawnmower's "home" position, measured in feet. The first and second values are the minimum (westernmost and southernmost) longitude and latitude, and the third and fourth values are the maximum (easternmost and northernmost) longitude and latitude.
-  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the lawnmower's "home" position, with positive longitude values to the east and positive latitude values to the north.
+  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the lawnmower's "home" position, with positive longitude values to the east and positive latitude values to the north. One of `"long_grass"`, `"short_grass"`, `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"`.
