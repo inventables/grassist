@@ -35,8 +35,12 @@ The following yard information can be queried:
 
 ## The challenge
 
-Implement the movement controller such that, given a yard, it plans a route satisfying the following conditions:
+Implement the movement controller in **lib/planner.js** such that, given a yard, it plans a route satisfying the following conditions:
   1. All the long grass in the yard gets cut.
   2. The lawnmower is returned to its "home" position with its rotors powered off.
   3. The lawnmower does not leave the bounds of the yard.
   4. The lawnmower and landscaping do not get damaged.
+
+We have a [Jasmine](http://jasmine.github.io/2.0/introduction.html) test suite with some failing tests. Your task is to get them all passing.
+
+To run the tests, open **jasmine/SpecRunner.html** in your browser.
