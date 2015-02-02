@@ -41,6 +41,6 @@ Implement the movement controller in **lib/planner.js** such that, given a yard,
   3. The lawnmower does not leave the bounds of the yard.
   4. The lawnmower and landscaping do not get damaged.
 
-We have a [Jasmine](http://jasmine.github.io/2.0/introduction.html) test suite with some failing tests. Your task is to get them all passing.
+We have a [Jest](https://facebook.github.io/jest/) test suite with some failing tests. Your task is to get them all passing.
 
-To run the tests, open **jasmine/SpecRunner.html** in your browser.
+To run the tests, install the required dependencies with `npm install` and then run `npm test`.
