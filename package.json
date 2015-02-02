@@ -1,0 +1,16 @@
+{
+  "name": "grassist",
+  "version": "0.0.0",
+  "description": "_[grass-SIST]_ (an undeniably clever portmanteaux of _grass_ and _assist_) is a controller for an autonomous lawnmower.",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest-cli": "^0.2.2"
+  },
+  "jest": {
+    "testDirectoryName": "spec",
+    "setupTestFrameworkScriptFile": "spec/support/customMatchers.js",
+    "testPathIgnorePatterns": ["/node_modules/", "/support/"]
+  }
+}
