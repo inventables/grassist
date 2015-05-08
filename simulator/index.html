@@ -13,9 +13,17 @@
         margin: 0 auto;
       }
       path {
-        stroke: red;
+        stroke: lightgray;
         fill: none;
         stroke-width: 5px;
+      }
+      .cut {
+        fill: gray;
+      }
+      .not-cut {
+        stroke: gray;
+        stroke-width: 2px;
+        fill: none;
       }
     </style>
   </head>
@@ -46,6 +54,7 @@
       var updates = [];
       var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
       var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
+      var classScale = d3.scale.ordinal().domain([true, false]).range(['cut', 'not-cut']);
       var radius = patchSize * 0.25;
 
       var line = d3.svg.line()
@@ -69,6 +78,7 @@
           .append('circle')
           .attr('cx', function(d) { return xScale(d.latitude); })
           .attr('cy', function(d) { return yScale(d.longitude); })
+          .attr('class', function(d) { return classScale(d.rotorEnabled); })
           .attr('r', radius);
       });
       planner.plan(mower, yard);
