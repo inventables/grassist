@@ -6,6 +6,7 @@
     <script type="text/javascript" src="../lib/lawnmower.js"></script>
     <script type="text/javascript" src="../lib/planner.js"></script>
     <script type="text/javascript" src="../lib/yard.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript">
@@ -19,8 +20,33 @@
       var mower = GRASSIST.lawnmower();
       var planner = GRASSIST.planner();
       mower.onUpdate(yard.processLawnmower);
+
+      var patchSize = 100;
+      var yardBounds = yard.bounds();
+      var yardWidth = 1 + yardBounds[2] - yardBounds[0];
+      var yardHeight = 1 + yardBounds[3] - yardBounds[1];
+      var svg = d3.select('body').append('svg')
+        .attr('width', patchSize * yardWidth)
+        .attr('height', patchSize * yardHeight);
+
+      var updates = [];
+      var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
+      var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
+      var radius = patchSize * 0.25;
+
       mower.onUpdate(function(latitude, longitude, rotorEnabled) {
-        document.write('latitude = ' + latitude + ', longitude = ' + longitude + ', rotorEnabled = ' + rotorEnabled + '<br>');
+        updates.push({
+          latitude: latitude,
+          longitude: longitude,
+          rotorEnabled: rotorEnabled
+        });
+
+        var dots = svg.selectAll('circle').data(updates);
+        dots.enter()
+          .append('circle')
+          .attr('cx', function(d) { return xScale(d.latitude); })
+          .attr('cy', function(d) { return yScale(d.longitude); })
+          .attr('r', radius);
       });
       planner.plan(mower, yard);
     </script>
