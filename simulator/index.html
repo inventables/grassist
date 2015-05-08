@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Grassist: the autonomous lawnmower</title>
+    <script type="text/javascript" src="../lib/init.js"></script>
+    <script type="text/javascript" src="../lib/lawnmower.js"></script>
+    <script type="text/javascript" src="../lib/planner.js"></script>
+    <script type="text/javascript" src="../lib/yard.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var patches = [
+        "!!!!!!!!",
+        "!!!!!!!!",
+        "!!!!!!!!",
+        "!!!!!!!!"
+      ];
+      var yard = GRASSIST.yard(patches, 1, 1);
+      var mower = GRASSIST.lawnmower();
+      var planner = GRASSIST.planner();
+      mower.onUpdate(yard.processLawnmower);
+      mower.onUpdate(function(latitude, longitude, rotorEnabled) {
+        document.write('latitude = ' + latitude + ', longitude = ' + longitude + ', rotorEnabled = ' + rotorEnabled + '<br>');
+      });
+      planner.plan(mower, yard);
+    </script>
+  </body>
+</html>
