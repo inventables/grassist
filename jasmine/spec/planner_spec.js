@@ -6,7 +6,8 @@ describe("planner", function() {
       return {
         compare: function(planner, patches, homeLongitude, homeLatitude) {
           var yard = GRASSIST.yard(patches, homeLongitude, homeLatitude);
-          var mower = GRASSIST.lawnmower(yard);
+          var mower = GRASSIST.lawnmower();
+          mower.onUpdate(yard.processLawnmower);
           var messages = [];
           planner.plan(mower, yard);
           if (!yard.freshlyCut()) {
