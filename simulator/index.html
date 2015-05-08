@@ -7,6 +7,13 @@
     <script type="text/javascript" src="../lib/planner.js"></script>
     <script type="text/javascript" src="../lib/yard.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <style type="text/css">
+      path {
+        stroke: red;
+        fill: none;
+        stroke-width: 5px;
+      }
+    </style>
   </head>
   <body>
     <script type="text/javascript">
@@ -34,6 +41,12 @@
       var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
       var radius = patchSize * 0.25;
 
+      var line = d3.svg.line()
+        .x(function(d) { return xScale(d.latitude); })
+        .y(function(d) { return yScale(d.longitude); });
+      svg.append('path').attr('d', '');
+      var visitGroup = svg.append('g');
+
       mower.onUpdate(function(latitude, longitude, rotorEnabled) {
         updates.push({
           latitude: latitude,
@@ -41,8 +54,11 @@
           rotorEnabled: rotorEnabled
         });
 
-        var dots = svg.selectAll('circle').data(updates);
-        dots.enter()
+        svg.select('path')
+          .attr('d', line(updates));
+
+        var visits = visitGroup.selectAll('circle').data(updates);
+        visits.enter()
           .append('circle')
           .attr('cx', function(d) { return xScale(d.latitude); })
           .attr('cy', function(d) { return yScale(d.longitude); })
