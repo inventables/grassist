@@ -6,12 +6,14 @@
 
 The lawnmower has a one-foot square cutting area. It can move one foot at a time in any of the cardinal directions (north, south, west, and east).
 
-The lawnmower has the following low-level capabilities:
+The lawnmower supports the following low-level commands:
   - `startRotor` — start the rotor. When the rotor is powered on, the blades spin and cut any long grass below the lawnmower.
   - `stopRotor` — stop the rotor.
   - `moveForward` — move the lawnmower forward one foot, in the direction of its heading.
   - `turnRight` — change the lawnmower's heading by 90º clockwise.
   - `turnLeft` — change the lawnmower's heading by 90º counter-clockwise.
+
+For convenience, the above commands are chainable.
 
 The following status information can be queried:
   - `position` — the current position, relative to the lawnmower's "home" position, measured in feet. The first value is the longitude, with positions east of the starting position being positive and west being negative. The second value is the latitude, with north being positive and south being negative.
