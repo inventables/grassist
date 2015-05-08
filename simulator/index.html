@@ -8,6 +8,10 @@
     <script type="text/javascript" src="../lib/yard.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <style type="text/css">
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
       path {
         stroke: red;
         fill: none;
@@ -18,12 +22,15 @@
   <body>
     <script type="text/javascript">
       var patches = [
-        "!!!!!!!!",
-        "!!!!!!!!",
-        "!!!!!!!!",
-        "!!!!!!!!"
+        " !!!!!!!!!! ",
+        "   %%%!!!!!!",
+        "   %X%!!!%!!",
+        "   %%%%%%X%!",
+        "   %X%!!!%!!",
+        "   %%%!!!!!!",
+        " !!!!!!!!!! "
       ];
-      var yard = GRASSIST.yard(patches, 1, 1);
+      var yard = GRASSIST.yard(patches, 0, 3);
       var mower = GRASSIST.lawnmower();
       var planner = GRASSIST.planner();
       mower.onUpdate(yard.processLawnmower);
