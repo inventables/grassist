@@ -58,15 +58,15 @@
       var radius = patchSize * 0.25;
 
       var line = d3.svg.line()
-        .x(function(d) { return xScale(d.latitude); })
-        .y(function(d) { return yScale(d.longitude); });
+        .x(function(d) { return xScale(d.longitude); })
+        .y(function(d) { return yScale(d.latitude); });
       svg.append('path').attr('d', '');
       var visitGroup = svg.append('g');
 
-      mower.onUpdate(function(latitude, longitude, rotorEnabled) {
+      mower.onUpdate(function(longitude, latitude, rotorEnabled) {
         updates.push({
-          latitude: latitude,
           longitude: longitude,
+          latitude: latitude,
           rotorEnabled: rotorEnabled
         });
 
@@ -76,8 +76,8 @@
         var visits = visitGroup.selectAll('circle').data(updates);
         visits.enter()
           .append('circle')
-          .attr('cx', function(d) { return xScale(d.latitude); })
-          .attr('cy', function(d) { return yScale(d.longitude); })
+          .attr('cx', function(d) { return xScale(d.longitude); })
+          .attr('cy', function(d) { return yScale(d.latitude); })
           .attr('class', function(d) { return classScale(d.rotorEnabled); })
           .attr('r', radius);
       });
