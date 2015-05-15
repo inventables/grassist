@@ -63,11 +63,14 @@
       svg.append('path').attr('d', '');
       var visitGroup = svg.append('g');
 
-      mower.onUpdate(function(longitude, latitude, rotorEnabled) {
+      mower.onUpdate(function(mower) {
+        var position = mower.position();
+        var longitude = position[0];
+        var latitude = position[1];
         updates.push({
           longitude: longitude,
           latitude: latitude,
-          rotorEnabled: rotorEnabled
+          rotorEnabled: mower.rotorEnabled()
         });
 
         svg.select('path')
