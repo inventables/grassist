@@ -12,7 +12,7 @@
         display: block;
         margin: 0 auto;
       }
-      path {
+      .path {
         stroke: lightgray;
         fill: none;
         stroke-width: 5px;
@@ -47,9 +47,6 @@
       var yardBounds = yard.bounds();
       var yardWidth = 1 + yardBounds[2] - yardBounds[0];
       var yardHeight = 1 + yardBounds[3] - yardBounds[1];
-      var svg = d3.select('body').append('svg')
-        .attr('width', patchSize * yardWidth)
-        .attr('height', patchSize * yardHeight);
 
       var updates = [];
       var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
@@ -60,8 +57,15 @@
       var line = d3.svg.line()
         .x(function(d) { return xScale(d.longitude); })
         .y(function(d) { return yScale(d.latitude); });
-      svg.append('path').attr('d', '');
-      var visitGroup = svg.append('g');
+
+      var svg = d3.select('body').append('svg')
+        .attr('width', patchSize * yardWidth)
+        .attr('height', patchSize * yardHeight);
+      svg.append('path')
+        .attr('class', 'path')
+        .attr('d', '');
+      svg.append('g')
+        .attr('class', 'visits');
 
       mower.onUpdate(function(mower) {
         var position = mower.position();
@@ -73,11 +77,11 @@
           rotorEnabled: mower.rotorEnabled()
         });
 
-        svg.select('path')
+        svg.select('.path')
           .attr('d', line(updates));
 
-        var visits = visitGroup.selectAll('circle').data(updates);
-        visits.enter()
+        svg.select('.visits').selectAll('circle').data(updates)
+          .enter()
           .append('circle')
           .attr('cx', function(d) { return xScale(d.longitude); })
           .attr('cy', function(d) { return yScale(d.latitude); })
