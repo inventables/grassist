@@ -25,6 +25,9 @@
         stroke-width: 2px;
         fill: none;
       }
+      .lawnmower-heading {
+        fill: white;
+      }
     </style>
   </head>
   <body>
@@ -51,7 +54,9 @@
       var updates = [];
       var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
       var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
-      var classScale = d3.scale.ordinal().domain([true, false]).range(['cut', 'not-cut']);
+      var visitClassScale = d3.scale.ordinal().domain([true, false]).range(['cut', 'not-cut']);
+      var rotorEnabledScale = d3.scale.ordinal().domain([true, false]).range(['#f03', '#969']);
+      var headingScale = d3.scale.ordinal().domain(['east', 'north', 'west', 'south']).range([0, -90, -180, -270]);
       var radius = patchSize * 0.25;
 
       var line = d3.svg.line()
@@ -66,6 +71,19 @@
         .attr('d', '');
       svg.append('g')
         .attr('class', 'visits');
+      var mowerGroup = svg.append('g')
+        .attr('class', 'lawnmower')
+        .attr('transform', 'translate(' + xScale(0) + ', ' + yScale(0) + ')');
+      mowerGroup.append('circle')
+        .attr('class', 'lawnmower-body')
+        .style('fill', rotorEnabledScale(false))
+        .attr('r', radius * 1.5);
+      mowerGroup.append('polygon')
+        .attr('class', 'lawnmower-heading')
+        .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0')
+        .attr('transform', 'rotate(' + headingScale(0) + ')');
+
+      var transition = svg.transition();
 
       mower.onUpdate(function(mower) {
         var position = mower.position();
@@ -85,8 +103,16 @@
           .append('circle')
           .attr('cx', function(d) { return xScale(d.longitude); })
           .attr('cy', function(d) { return yScale(d.latitude); })
-          .attr('class', function(d) { return classScale(d.rotorEnabled); })
+          .attr('class', function(d) { return visitClassScale(d.rotorEnabled); })
           .attr('r', radius);
+
+        transition = transition.transition()
+        transition.select('.lawnmower')
+          .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ')');
+        transition.select('.lawnmower-body')
+          .style('fill', rotorEnabledScale(mower.rotorEnabled()));
+        transition.select('.lawnmower-heading')
+          .attr('transform', 'rotate(' + headingScale(mower.heading()) + ')');
       });
       planner.plan(mower, yard);
     </script>
