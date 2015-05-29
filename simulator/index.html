@@ -59,6 +59,7 @@
         var yardSize = yard.size();
         var yardWidth = yardSize[0];
         var yardHeight = yardSize[1];
+        var svgScale = Math.min(Math.min(750 / yardWidth, 750 / yardHeight) / patchSize, 2);
 
         var updates = [];
         var xScale = d3.scale.linear().domain([0, yardWidth - 1]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
@@ -77,10 +78,10 @@
           .y(function(d) { return yScale(d.latitude); });
 
         var svg = d3.select('body').append('svg')
-          .attr('width', patchSize * yardWidth + 2 * padding)
-          .attr('height', patchSize * yardHeight + 2 * padding);
+          .attr('width', svgScale * (patchSize * yardWidth + 2 * padding))
+          .attr('height', svgScale * (patchSize * yardHeight + 2 * padding));
         var contentGroup = svg.append('g')
-          .attr('transform', 'translate(' + padding + ', ' + padding + ')');
+          .attr('transform', 'scale(' + svgScale + ', ' + svgScale + ') translate(' + padding + ', ' + padding + ')');
         var yardGroup = contentGroup.append('g')
           .attr('class', 'yard');
         contentGroup.append('path')
