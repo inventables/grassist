@@ -13,17 +13,13 @@
         margin: 0 auto;
       }
       .path {
-        stroke: lightgray;
+        stroke: #d24;
+        stroke-dasharray: 0.25 12.25;
+        stroke-dashoffset: 0;
+        stroke-linecap: round;
+        opacity: 0.75;
         fill: none;
-        stroke-width: 5px;
-      }
-      .cut {
-        fill: gray;
-      }
-      .not-cut {
-        stroke: gray;
-        stroke-width: 2px;
-        fill: none;
+        stroke-width: 6px;
       }
       .lawnmower-heading {
         fill: white;
@@ -56,7 +52,6 @@
       var updates = [];
       var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
       var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
-      var visitClassScale = d3.scale.ordinal().domain([true, false]).range(['cut', 'not-cut']);
       var rotorEnabledScale = d3.scale.ordinal()
         .domain([true, false])
         .range(['#d24', '#835']);
@@ -78,8 +73,6 @@
       svg.append('path')
         .attr('class', 'path')
         .attr('d', '');
-      svg.append('g')
-        .attr('class', 'visits');
       var mowerGroup = svg.append('g')
         .attr('class', 'lawnmower')
         .attr('transform', 'translate(' + xScale(0) + ', ' + yScale(0) + ')');
@@ -123,9 +116,6 @@
           rotorEnabled: mower.rotorEnabled()
         });
 
-        svg.select('.visits').selectAll('circle').data(updates)
-          .enter()
-          .append('circle');
         var lineData = line(updates);
 
         transition = transition.transition();
@@ -144,11 +134,6 @@
             svg.select('.path')
               .attr('d', lineData + 'L' + xScale(longitude) + ',' + yScale(latitude));
           });
-        transition.transition().select('.visits').selectAll('circle')
-          .attr('cx', function(d) { return xScale(d.longitude); })
-          .attr('cy', function(d) { return yScale(d.latitude); })
-          .attr('class', function(d) { return visitClassScale(d.rotorEnabled); })
-          .attr('r', radius);
       });
       planner.plan(mower, yard);
     </script>
