@@ -117,7 +117,7 @@
           .attr('d', tessellate([0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0], [0.00, 0.01, -0.02, -0.03, 0.01, -0.01, 0.00]))
           .attr('transform', function(d, i) { return 'translate(' + patchSize * (i % yardWidth) + ', ' + patchSize * Math.floor(i / yardWidth) + ') scale(' + patchSize + ', ' + patchSize + ')'; });
 
-        var transition = contentGroup.transition();
+        var transition = contentGroup.transition().delay(2000);
 
         mower.onUpdate(function(mower) {
           var position = mower.position();
