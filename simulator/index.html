@@ -32,23 +32,25 @@
   <body>
     <script type="text/javascript">
       var patches = [
-        " !!!!!!!!!! ",
-        "   %%%!!!!!!",
-        "   %X%!!!%!!",
-        "   %%%%%%X%!",
-        "   %X%!!!%!!",
-        "   %%%!!!!!!",
-        " !!!!!!!!!! "
+        " !!!!!!!!!!!  ",
+        "   %%%!!!!!!! ",
+        "   %X%!!!%!!!!",
+        "  %%%%%!%X%!!!",
+        "  %XXX%%XXX%!!",
+        "  %%%%%!%X%!!!",
+        "   %X%!!!%!!!!",
+        "   %%%!!!!!!! ",
+        " !!!!!!!!!!!  "
       ];
       var startLongitude = 0;
-      var startLatitude = 3;
+      var startLatitude = 4;
       var yard = GRASSIST.yard(patches, startLongitude, startLatitude);
       var mower = GRASSIST.lawnmower();
       var planner = GRASSIST.planner();
       mower.onUpdate(yard.processLawnmower);
 
       var padding = 5;
-      var patchSize = 100;
+      var patchSize = 75;
       var yardBounds = yard.bounds();
       var yardWidth = 1 + yardBounds[2] - yardBounds[0];
       var yardHeight = 1 + yardBounds[3] - yardBounds[1];
