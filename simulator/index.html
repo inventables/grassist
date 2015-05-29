@@ -139,7 +139,7 @@
 
         var lineData = line(updates);
 
-        transition = transition.transition();
+        transition = transition.transition().ease('linear');
 
         transition.select('.yard').select('.tile:nth-child(' + (1 + (longitude + startLongitude) + (yardHeight - 1 - (latitude + startLatitude)) * yardWidth) + ')')
           .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
