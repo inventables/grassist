@@ -43,21 +43,21 @@
         " !!!!!!!!!!!  "
       ];
       var startLongitude = 0;
-      var startLatitude = 4;
-      var yard = GRASSIST.yard(patches, startLongitude, startLatitude);
-      var mower = GRASSIST.lawnmower();
+      var startLatitude = 0;
+      var yard = GRASSIST.yard(patches);
+      var mower = GRASSIST.lawnmower(startLongitude, startLatitude);
       var planner = GRASSIST.planner();
       mower.onUpdate(yard.processLawnmower);
 
       var padding = 5;
       var patchSize = 75;
-      var yardBounds = yard.bounds();
-      var yardWidth = 1 + yardBounds[2] - yardBounds[0];
-      var yardHeight = 1 + yardBounds[3] - yardBounds[1];
+      var yardSize = yard.size();
+      var yardWidth = yardSize[0];
+      var yardHeight = yardSize[1];
 
       var updates = [];
-      var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
-      var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
+      var xScale = d3.scale.linear().domain([0, yardWidth - 1]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
+      var yScale = d3.scale.linear().domain([0, yardHeight - 1]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
       var rotorEnabledScale = d3.scale.ordinal()
         .domain([true, false])
         .range(['#d24', '#835']);
@@ -83,7 +83,7 @@
         .attr('d', '');
       var mowerGroup = contentGroup.append('g')
         .attr('class', 'lawnmower')
-        .attr('transform', 'translate(' + xScale(0) + ', ' + yScale(0) + ')');
+        .attr('transform', 'translate(' + xScale(startLongitude) + ', ' + yScale(startLatitude) + ')');
       mowerGroup.append('circle')
         .attr('class', 'lawnmower-body')
         .style('fill', rotorEnabledScale(false))
@@ -95,7 +95,7 @@
 
       var yardTiles = [];
       var updateTile = function(longitude, latitude) {
-        yardTiles[longitude + (yardHeight - latitude - 1) * yardWidth] = yard.patchType(longitude - startLongitude, latitude - startLatitude);
+        yardTiles[longitude + (yardHeight - latitude - 1) * yardWidth] = yard.patchType(longitude, latitude);
       };
       for (var latitude = yardHeight - 1; latitude >= 0; latitude--) {
         for (var longitude = 0; longitude < yardWidth; longitude++) {
@@ -143,7 +143,7 @@
 
         transition = transition.transition().ease('linear');
 
-        transition.select('.yard').select('.tile:nth-child(' + (1 + (longitude + startLongitude) + (yardHeight - 1 - (latitude + startLatitude)) * yardWidth) + ')')
+        transition.select('.yard').select('.tile:nth-child(' + (1 + longitude + (yardHeight - 1 - latitude) * yardWidth) + ')')
           .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
           .attr('stroke', patchTypeScale(yard.patchType(longitude, latitude)));
         transition.select('.lawnmower')

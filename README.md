@@ -16,7 +16,7 @@ The lawnmower supports the following low-level commands:
 For convenience, the above commands are chainable.
 
 The following status information can be queried:
-  - `position` — the current position, relative to the lawnmower's "home" position, measured in feet. The first value is the longitude, with positions east of the starting position being positive and west being negative. The second value is the latitude, with north being positive and south being negative.
+  - `position` — the lawnmower's current position within the yard. An array containing two values: the lawnmower's longitude and latitude, measured in feet, relative to the west and south edge of the yard. Positive longitude values are to the east and positive latitude values are to the north.
   - `heading` — the current heading. One of `"north"`, `"south"`, `"west"`, or `"east"`.
   - `rotorEnabled` — whether or not the rotor is powered on. `true` or `false`.
   - `home` — whether or not the lawnmower is currently in its "home" position. `true` or `false`.
@@ -31,8 +31,8 @@ Yards can contain the following elements:
   - **Plants and flowers** — The lawnmower _must not_ attempt to pass over plants or flowers at all, regardless of whether or not the rotor is powered on, or the lawnmower and/or landscaping will get damaged.
 
 The following yard information can be queried:
-  - `bounds` — the extrema of the lawn, relative to the lawnmower's "home" position, measured in feet. The first and second values are the minimum (westernmost and southernmost) longitude and latitude, and the third and fourth values are the maximum (easternmost and northernmost) longitude and latitude.
-  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the lawnmower's "home" position, with positive longitude values to the east and positive latitude values to the north. One of `"long_grass"`, `"short_grass"`, `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"`.
+  - `size` — the size of the yard, measured in feet. An array containing two values: the distance from the west edge to the east edge and the distance from the south edge to the north edge.
+  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the west and south edge of the yard. Positive longitude values are to the east and positive latitude values are to the north. One of `"long_grass"`, `"short_grass"`, `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"`.
   - `freshlyCut` — whether or not all of the long grass has been cut. `true` or `false`.
 
 ## The challenge
