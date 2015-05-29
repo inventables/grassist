@@ -63,7 +63,7 @@
         .domain(['long_grass', 'short_grass', 'sidewalk', 'mulch_gravel', 'plant_flower'])
         .range(['#9d4', '#cd7', '#ba9', '#983', '#372']);
       var headingScale = d3.scale.ordinal().domain(['east', 'north', 'west', 'south']).range([0, -90, -180, -270]);
-      var radius = patchSize * 0.25;
+      var radius = patchSize * 0.15;
 
       var line = d3.svg.line()
         .x(function(d) { return xScale(d.longitude); })
@@ -85,7 +85,7 @@
       mowerGroup.append('circle')
         .attr('class', 'lawnmower-body')
         .style('fill', rotorEnabledScale(false))
-        .attr('r', radius * 1.5);
+        .attr('r', radius * 2);
       mowerGroup.append('polygon')
         .attr('class', 'lawnmower-heading')
         .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0')
