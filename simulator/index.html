@@ -41,7 +41,9 @@
         "   %%%!!!!!!",
         " !!!!!!!!!! "
       ];
-      var yard = GRASSIST.yard(patches, 0, 3);
+      var startLongitude = 0;
+      var startLatitude = 3;
+      var yard = GRASSIST.yard(patches, startLongitude, startLatitude);
       var mower = GRASSIST.lawnmower();
       var planner = GRASSIST.planner();
       mower.onUpdate(yard.processLawnmower);
@@ -55,7 +57,12 @@
       var xScale = d3.scale.linear().domain([yardBounds[0], yardBounds[2]]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
       var yScale = d3.scale.linear().domain([yardBounds[1], yardBounds[3]]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
       var visitClassScale = d3.scale.ordinal().domain([true, false]).range(['cut', 'not-cut']);
-      var rotorEnabledScale = d3.scale.ordinal().domain([true, false]).range(['#f03', '#969']);
+      var rotorEnabledScale = d3.scale.ordinal()
+        .domain([true, false])
+        .range(['#d24', '#835']);
+      var patchTypeScale = d3.scale.ordinal()
+        .domain(['long_grass', 'short_grass', 'sidewalk', 'mulch_gravel', 'plant_flower'])
+        .range(['#9d4', '#cd7', '#ba9', '#983', '#372']);
       var headingScale = d3.scale.ordinal().domain(['east', 'north', 'west', 'south']).range([0, -90, -180, -270]);
       var radius = patchSize * 0.25;
 
@@ -66,6 +73,8 @@
       var svg = d3.select('body').append('svg')
         .attr('width', patchSize * yardWidth)
         .attr('height', patchSize * yardHeight);
+      var yardGroup = svg.append('g')
+        .attr('class', 'yard');
       svg.append('path')
         .attr('class', 'path')
         .attr('d', '');
@@ -82,6 +91,25 @@
         .attr('class', 'lawnmower-heading')
         .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0')
         .attr('transform', 'rotate(' + headingScale(0) + ')');
+
+      var yardTiles = [];
+      var updateTile = function(longitude, latitude) {
+        yardTiles[longitude + (yardHeight - latitude - 1) * yardWidth] = yard.patchType(longitude - startLongitude, latitude - startLatitude);
+      };
+      for (var latitude = yardHeight - 1; latitude >= 0; latitude--) {
+        for (var longitude = 0; longitude < yardWidth; longitude++) {
+          updateTile(longitude, latitude);
+        }
+      }
+      yardGroup.selectAll('.tile').data(yardTiles)
+        .enter()
+        .append('rect')
+        .attr('class', 'tile')
+        .attr('fill', patchTypeScale)
+        .attr('x', function(d, i) { return patchSize * (i % yardWidth) })
+        .attr('y', function(d, i) { return patchSize * Math.floor(i / yardWidth) })
+        .attr('width', patchSize)
+        .attr('height', patchSize);
 
       var transition = svg.transition();
 
@@ -102,6 +130,8 @@
 
         transition = transition.transition();
 
+        transition.select('.yard').select('.tile:nth-child(' + (1 + (longitude + startLongitude) + (yardHeight - 1 - (latitude + startLatitude)) * yardWidth) + ')')
+          .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)));
         transition.select('.lawnmower')
           .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ')');
         transition.select('.lawnmower-body')
@@ -114,7 +144,6 @@
             svg.select('.path')
               .attr('d', lineData + 'L' + xScale(longitude) + ',' + yScale(latitude));
           });
-
         transition.transition().select('.visits').selectAll('circle')
           .attr('cx', function(d) { return xScale(d.longitude); })
           .attr('cy', function(d) { return yScale(d.latitude); })
