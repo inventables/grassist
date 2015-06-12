@@ -5,16 +5,15 @@ describe("planner", function() {
     toMow: function() {
       return {
         compare: function(planner, patches, homeLongitude, homeLatitude) {
-          var yard = GRASSIST.yard(patches, homeLongitude, homeLatitude);
-          var mower = GRASSIST.lawnmower();
+          var yard = GRASSIST.yard(patches);
+          var mower = GRASSIST.lawnmower(homeLongitude, homeLatitude);
           mower.onUpdate(yard.processLawnmower);
           var messages = [];
           planner.plan(mower, yard);
           if (!yard.freshlyCut()) {
             messages.push("Expected planner to cut the whole yard");
           }
-          var position = mower.position();
-          if (position[0] !== 0 || position[1] !== 0) {
+          if (!mower.home()) {
             messages.push("Expected the lawnmower to be returned to its home position");
           };
           if (mower.rotorEnabled()) {
