@@ -150,7 +150,11 @@
             });
         });
 
-        planner.plan(mower, yard);
+        try {
+          planner.plan(mower, yard);
+        } catch (err) {
+          console.log(err);
+        }
       };
 
       run([
