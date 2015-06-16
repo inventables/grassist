@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Grassist: the autonomous lawnmower</title>
+    <script type="text/javascript" src="../lib/init.js"></script>
+    <script type="text/javascript" src="../lib/lawnmower.js"></script>
+    <script type="text/javascript" src="../lib/planner.js"></script>
+    <script type="text/javascript" src="../lib/yard.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <style type="text/css">
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      .path {
+        stroke: #d24;
+        stroke-dasharray: 0.25 12.25;
+        stroke-dashoffset: 0;
+        stroke-linecap: round;
+        opacity: 0.75;
+        fill: none;
+        stroke-width: 6px;
+      }
+      .lawnmower-heading {
+        fill: white;
+      }
+      .tile {
+        vector-effect: non-scaling-stroke;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var tessellate = function(xs, ys) {
+        var result = '';
+        for (var index = 0; index < xs.length; index++) {
+          result += (xs[index]) + ',' + (ys[index]) + ','
+        }
+        for (var index = 0; index < xs.length; index++) {
+          result += (1 + ys[index]) + ',' + (xs[index]) + ','
+        }
+        for (var index = xs.length - 1; index >= 0; index--) {
+          result += (xs[index]) + ',' + (1 + ys[index]) + ','
+        }
+        for (var index = xs.length - 1; index >= 0; index--) {
+          result += (ys[index]) + ',' + (xs[index]) + ','
+        }
+        return 'M' + result + 'Z';
+      };
+
+      var run = function(patches, startLongitude, startLatitude) {
+        var yard = GRASSIST.yard(patches);
+        var mower = GRASSIST.lawnmower(startLongitude, startLatitude);
+        var planner = GRASSIST.planner();
+        mower.onUpdate(yard.processLawnmower);
+
+        var padding = 5;
+        var patchSize = 75;
+        var yardSize = yard.size();
+        var yardWidth = yardSize[0];
+        var yardHeight = yardSize[1];
+        var svgScale = Math.min(Math.min(750 / yardWidth, 750 / yardHeight) / patchSize, 2);
+
+        var updates = [];
+        var xScale = d3.scale.linear().domain([0, yardWidth - 1]).range([patchSize * 0.5, patchSize * (yardWidth - 0.5)]);
+        var yScale = d3.scale.linear().domain([0, yardHeight - 1]).range([patchSize * (yardHeight - 0.5), patchSize * 0.5]);
+        var rotorEnabledScale = d3.scale.ordinal()
+          .domain([true, false])
+          .range(['#d24', '#835']);
+        var patchTypeScale = d3.scale.ordinal()
+          .domain(['long_grass', 'short_grass', 'sidewalk', 'mulch_gravel', 'plant_flower'])
+          .range(['#9d4', '#cd7', '#ba9', '#983', '#372']);
+        var headingScale = d3.scale.ordinal().domain(['east', 'north', 'west', 'south']).range([0, -90, -180, -270]);
+        var radius = patchSize * 0.15;
+
+        var line = d3.svg.line()
+          .x(function(d) { return xScale(d.longitude); })
+          .y(function(d) { return yScale(d.latitude); });
+
+        var svg = d3.select('body').append('svg')
+          .attr('width', svgScale * (patchSize * yardWidth + 2 * padding))
+          .attr('height', svgScale * (patchSize * yardHeight + 2 * padding));
+        var contentGroup = svg.append('g')
+          .attr('transform', 'scale(' + svgScale + ', ' + svgScale + ') translate(' + padding + ', ' + padding + ')');
+        var yardGroup = contentGroup.append('g')
+          .attr('class', 'yard');
+        contentGroup.append('path')
+          .attr('class', 'path')
+          .attr('d', '');
+        var mowerGroup = contentGroup.append('g')
+          .attr('class', 'lawnmower')
+          .attr('transform', 'translate(' + xScale(startLongitude) + ', ' + yScale(startLatitude) + ')');
+        mowerGroup.append('circle')
+          .attr('class', 'lawnmower-body')
+          .style('fill', rotorEnabledScale(false))
+          .attr('r', radius * 2);
+        mowerGroup.append('polygon')
+          .attr('class', 'lawnmower-heading')
+          .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0')
+          .attr('transform', 'rotate(' + headingScale(0) + ')');
+
+        var yardTiles = [];
+        var updateTile = function(longitude, latitude) {
+          yardTiles[longitude + (yardHeight - latitude - 1) * yardWidth] = yard.patchType(longitude, latitude);
+        };
+        for (var latitude = yardHeight - 1; latitude >= 0; latitude--) {
+          for (var longitude = 0; longitude < yardWidth; longitude++) {
+            updateTile(longitude, latitude);
+          }
+        }
+        yardGroup.selectAll('.tile').data(yardTiles)
+          .enter()
+          .append('path')
+          .attr('class', 'tile')
+          .attr('fill', patchTypeScale)
+          .attr('stroke', patchTypeScale)
+          .attr('d', tessellate([0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0], [0.00, 0.01, -0.02, -0.03, 0.01, -0.01, 0.00]))
+          .attr('transform', function(d, i) { return 'translate(' + patchSize * (i % yardWidth) + ', ' + patchSize * Math.floor(i / yardWidth) + ') scale(' + patchSize + ', ' + patchSize + ')'; });
+
+        var transition = contentGroup.transition().delay(2000);
+
+        mower.onUpdate(function(mower) {
+          var position = mower.position();
+          var longitude = position[0];
+          var latitude = position[1];
+          updates.push({
+            longitude: longitude,
+            latitude: latitude,
+            rotorEnabled: mower.rotorEnabled()
+          });
+
+          var lineData = line(updates);
+
+          transition = transition.transition().ease('linear');
+
+          transition.select('.yard').select('.tile:nth-child(' + (1 + longitude + (yardHeight - 1 - latitude) * yardWidth) + ')')
+            .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
+            .attr('stroke', patchTypeScale(yard.patchType(longitude, latitude)));
+          transition.select('.lawnmower')
+            .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ')');
+          transition.select('.lawnmower-body')
+            .style('fill', rotorEnabledScale(mower.rotorEnabled()));
+          transition.select('.lawnmower-heading')
+            .attr('transform', 'rotate(' + headingScale(mower.heading()) + ')');
+          transition.select('.path')
+            .attr('d', lineData)
+            .each('end', function() {
+              contentGroup.select('.path')
+                .attr('d', lineData + 'L' + xScale(longitude) + ',' + yScale(latitude));
+            });
+        });
+
+        try {
+          planner.plan(mower, yard);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      run([
+        "!"
+      ], 0, 0);
+      run([
+        "!!!",
+        "!!!"
+      ], 0, 0);
+      run([
+        "!!!!!!!!",
+        "!!!!!!!!",
+        "!!!!!!!!",
+        "!!!!!!!!"
+      ], 0, 0);
+      run([
+        "       ",
+        "  !!!  ",
+        " !!X!! ",
+        "  !!!  ",
+        "       "
+      ], 0, 0);
+      run([
+        "!!!!%!!!!",
+        "!!!!%!!!!",
+        "%%%%%%%%%",
+        "!!!!%!!!!",
+        "!!!!%!!!!"
+      ], 4, 0);
+      run([
+        "!!!!!!!!!!!!!!",
+        "!X!!X!!XXXXXX!",
+        "!X!!X!!!!!!!!!",
+        "!X!!X!!!!!X!!!",
+        "!X!!X!!!X!X!!!",
+        "!!!XX!!!X!!!!!",
+        "!!!!!!!X!!XXX!",
+        "!XX!!!!X!!!!X!",
+        "!!!!!!!!!!!!!!"
+      ], 0, 4);
+      run([
+        "          XX        ",
+        "    XXXXXXXXXXXXXX  ",
+        "    X!!!!!!!!!!!!X  ",
+        "    X!!!XX!!XX!!!X  ",
+        "    X!!!XX!!XX!!!X  ",
+        "    X!!!!!!!!!!!!X  ",
+        "X X X!X!!!!!!!!X!X  ",
+        " X  X!!X!!!!!!X!!X  ",
+        "XXX X!!!XXXXXX!!!X  ",
+        "   XX!!!!!!!!!!!!X  ",
+        "    XXXXXXXXXXXXXX  ",
+        "      XX      XX    ",
+        "     XXXXXXXXXXXX   ",
+        "     XX        XX   "
+      ], 5, 4);
+    </script>
+  </body>
+</html>

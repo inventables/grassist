@@ -5,15 +5,15 @@ describe("planner", function() {
     toMow: function() {
       return {
         compare: function(planner, patches, homeLongitude, homeLatitude) {
-          var yard = GRASSIST.yard(patches, homeLongitude, homeLatitude);
-          var mower = GRASSIST.lawnmower(yard);
+          var yard = GRASSIST.yard(patches);
+          var mower = GRASSIST.lawnmower(homeLongitude, homeLatitude);
+          mower.onUpdate(yard.processLawnmower);
           var messages = [];
           planner.plan(mower, yard);
           if (!yard.freshlyCut()) {
             messages.push("Expected planner to cut the whole yard");
           }
-          var position = mower.position();
-          if (position[0] !== 0 || position[1] !== 0) {
+          if (!mower.home()) {
             messages.push("Expected the lawnmower to be returned to its home position");
           };
           if (mower.rotorEnabled()) {
@@ -64,6 +64,17 @@ describe("planner", function() {
     expect(planner).toMow(patches, 0, 0);
   });
 
+  it("should avoid passing over a flower bed", function() {
+    var patches = [
+      "       ",
+      "  !!!  ",
+      " !!X!! ",
+      "  !!!  ",
+      "       "
+    ];
+    expect(planner).toMow(patches, 0, 0);
+  });
+
   it("should avoid gravel when the rotor is enabled", function() {
     var patches = [
       "!!!!%!!!!",
@@ -72,33 +83,42 @@ describe("planner", function() {
       "!!!!%!!!!",
       "!!!!%!!!!"
     ];
-    expect(planner).toMow(patches, 0, 4);
-  });
-
-  it("should avoid passing over a flower bed", function() {
-    var patches = [
-      "!XXXXXX!",
-      "!!XXXX!!",
-      "!!!!!!!!",
-      "!!!!!!!!",
-      "!!!!!!!!"
-    ];
     expect(planner).toMow(patches, 4, 0);
   });
 
   it("should mow a complicated yard", function() {
     var patches = [
-      "XXXXXXXXXXXXX",
-      "XXXX!!!!!!!!X",
-      "XXX!!!!X!!!!X",
-      "XX!!!!!!!!!!X",
-      " !!!!!!!!!!XX",
-      " !!!!!!!%%%%%",
-      " !!!!!!%%%%%%",
-      "  !!!!%%%%%%%",
-      "             "
+      "!!!!!!!!!!!!!!",
+      "!X!!X!!XXXXXX!",
+      "!X!!X!!!!!!!!!",
+      "!X!!X!!!!!X!!!",
+      "!X!!X!!!X!X!!!",
+      "!!!XX!!!X!!!!!",
+      "!!!!!!!X!!XXX!",
+      "!XX!!!!X!!!!X!",
+      "!!!!!!!!!!!!!!"
     ];
-    expect(planner).toMow(patches, 0, 0);
+    expect(planner).toMow(patches, 0, 4);
+  });
+
+  it("should mow a smiling easel", function() {
+    var patches = [
+      "          XX        ",
+      "    XXXXXXXXXXXXXX  ",
+      "    X!!!!!!!!!!!!X  ",
+      "    X!!!XX!!XX!!!X  ",
+      "    X!!!XX!!XX!!!X  ",
+      "    X!!!!!!!!!!!!X  ",
+      "X X X!X!!!!!!!!X!X  ",
+      " X  X!!X!!!!!!X!!X  ",
+      "XXX X!!!XXXXXX!!!X  ",
+      "   XX!!!!!!!!!!!!X  ",
+      "    XXXXXXXXXXXXXX  ",
+      "      XX      XX    ",
+      "     XXXXXXXXXXXX   ",
+      "     XX        XX   "
+    ];
+    expect(planner).toMow(patches, 5, 4);
   });
 });
 
