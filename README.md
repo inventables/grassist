@@ -46,3 +46,5 @@ Implement the movement controller in **lib/planner.js** such that, given a yard,
 We have a [Jasmine](http://jasmine.github.io/2.0/introduction.html) test suite with some failing tests. Your task is to get them all passing.
 
 To run the tests, open **jasmine/SpecRunner.html** in your browser.
+
+We have a visual simulator that will show the behavior of your movement controller on the same yards as the test suite. This may be helpful for debugging. To run the simulator, open **simulator/index.html** in your browser.
