@@ -64,6 +64,17 @@ describe("planner", function() {
     expect(planner).toMow(patches, 0, 0);
   });
 
+  it("should avoid passing over a flower bed", function() {
+    var patches = [
+      "       ",
+      "  !!!  ",
+      " !!X!! ",
+      "  !!!  ",
+      "       "
+    ];
+    expect(planner).toMow(patches, 0, 0);
+  });
+
   it("should avoid gravel when the rotor is enabled", function() {
     var patches = [
       "!!!!%!!!!",
@@ -72,33 +83,42 @@ describe("planner", function() {
       "!!!!%!!!!",
       "!!!!%!!!!"
     ];
-    expect(planner).toMow(patches, 0, 4);
-  });
-
-  it("should avoid passing over a flower bed", function() {
-    var patches = [
-      "!XXXXXX!",
-      "!!XXXX!!",
-      "!!!!!!!!",
-      "!!!!!!!!",
-      "!!!!!!!!"
-    ];
     expect(planner).toMow(patches, 4, 0);
   });
 
   it("should mow a complicated yard", function() {
     var patches = [
-      "XXXXXXXXXXXXX",
-      "XXXX!!!!!!!!X",
-      "XXX!!!!X!!!!X",
-      "XX!!!!!!!!!!X",
-      " !!!!!!!!!!XX",
-      " !!!!!!!%%%%%",
-      " !!!!!!%%%%%%",
-      "  !!!!%%%%%%%",
-      "             "
+      "!!!!!!!!!!!!!!",
+      "!X!!X!!XXXXXX!",
+      "!X!!X!!!!!!!!!",
+      "!X!!X!!!!!X!!!",
+      "!X!!X!!!X!X!!!",
+      "!!!XX!!!X!!!!!",
+      "!!!!!!!X!!XXX!",
+      "!XX!!!!X!!!!X!",
+      "!!!!!!!!!!!!!!"
     ];
-    expect(planner).toMow(patches, 0, 0);
+    expect(planner).toMow(patches, 0, 4);
+  });
+
+  it("should mow a smiling easel", function() {
+    var patches = [
+      "          XX        ",
+      "    XXXXXXXXXXXXXX  ",
+      "    X!!!!!!!!!!!!X  ",
+      "    X!!!XX!!XX!!!X  ",
+      "    X!!!XX!!XX!!!X  ",
+      "    X!!!!!!!!!!!!X  ",
+      "X X X!X!!!!!!!!X!X  ",
+      " X  X!!X!!!!!!X!!X  ",
+      "XXX X!!!XXXXXX!!!X  ",
+      "   XX!!!!!!!!!!!!X  ",
+      "    XXXXXXXXXXXXXX  ",
+      "      XX      XX    ",
+      "     XXXXXXXXXXXX   ",
+      "     XX        XX   "
+    ];
+    expect(planner).toMow(patches, 5, 4);
   });
 });
 
