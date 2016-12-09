@@ -118,8 +118,9 @@
           .attr('transform', function(d, i) { return 'translate(' + patchSize * (i % yardWidth) + ', ' + patchSize * Math.floor(i / yardWidth) + ') scale(' + patchSize + ', ' + patchSize + ')'; });
 
         var transition = contentGroup.transition().delay(2000);
+        var alive = true;
 
-        mower.onUpdate(function(mower) {
+        var updateVisualization = function(mower) {
           var position = mower.position();
           var longitude = position[0];
           var latitude = position[1];
@@ -133,27 +134,65 @@
 
           transition = transition.transition().ease('linear');
 
-          transition.select('.yard').select('.tile:nth-child(' + (1 + longitude + (yardHeight - 1 - latitude) * yardWidth) + ')')
-            .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
-            .attr('stroke', patchTypeScale(yard.patchType(longitude, latitude)));
-          transition.select('.lawnmower')
-            .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ') rotate(' + headingScale(mower.heading()) + ')');
-          transition.select('.lawnmower-body')
-            .style('fill', rotorEnabledScale(mower.rotorEnabled()));
-          transition.select('.lawnmower-heading')
-            .attr('opacity', mower.rotorEnabled() ? 1 : 0.5);
-          transition.select('.path')
-            .attr('d', lineData)
-            .each('end', function() {
-              contentGroup.select('.path')
-                .attr('d', lineData + 'L' + xScale(longitude) + ',' + yScale(latitude));
-            });
-        });
+          if (alive) {
+            transition.select('.yard').select('.tile:nth-child(' + (1 + longitude + (yardHeight - 1 - latitude) * yardWidth) + ')')
+              .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
+              .attr('stroke', patchTypeScale(yard.patchType(longitude, latitude)));
+            transition.select('.lawnmower')
+              .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ') rotate(' + headingScale(mower.heading()) + ')');
+            transition.select('.lawnmower-body')
+              .attr('cx', 0)
+              .attr('cy', 0)
+              .style('fill', rotorEnabledScale(mower.rotorEnabled()));
+            transition.select('.lawnmower-heading')
+              .attr('opacity', mower.rotorEnabled() ? 1 : 0.5);
+            transition.select('.path')
+              .attr('d', lineData)
+              .each('end', function() {
+                contentGroup.select('.path')
+                  .attr('d', lineData + 'L' + xScale(longitude) + ',' + yScale(latitude));
+              });
+          } else {
+            var previous = updates[updates.length - 2];
+            var previousEnabled = previous.rotorEnabled;
+            var moving = (previous.longitude !== longitude || previous.latitude !== latitude);
+            var omnirandom = function() { return 2 * Math.random() - 1; };
+            var patchScaled = function(value) { return value * patchSize / 2; };
+            var biasScaled = function(value) {
+              return patchScaled(moving ? 1 - 1.5 * Math.pow((1 - value) / 2, 4) : value);
+            };
+            transition.select('.lawnmower-body')
+              .attr('cx', biasScaled(0))
+              .attr('r', 0);
+            transition.select('.lawnmower-heading')
+              .attr('opacity', 0);
+            transition.select('.lawnmower')
+              .each('start', function() {
+                mowerGroup.selectAll('.lawnmower-chunk').data(new Array(25))
+                  .enter()
+                  .append('circle')
+                  .attr('class', 'lawnmower-chunk')
+                  .style('fill', rotorEnabledScale(previousEnabled))
+                  .attr('cx', function(d) { return 0; })
+                  .attr('cy', function(d) { return 0; })
+                  .attr('r', function(d) { return 0; });
+                transition.selectAll('.lawnmower-chunk')
+                  .style('fill', rotorEnabledScale(mower.rotorEnabled()))
+                  .attr('cx', function(d) { return biasScaled(omnirandom()); })
+                  .attr('cy', function(d) { return patchScaled(omnirandom()); })
+                  .attr('r', function(d) { return (Math.pow(0.5 + Math.random(), 2)) * radius / 4; });
+              });
+          }
+        };
+
+        mower.onUpdate(updateVisualization);
 
         try {
           planner.plan(mower, yard);
         } catch (err) {
           console.log(err);
+          alive = false;
+          updateVisualization(mower);
         }
       };
 
