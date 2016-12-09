@@ -89,15 +89,15 @@
           .attr('d', '');
         var mowerGroup = contentGroup.append('g')
           .attr('class', 'lawnmower')
-          .attr('transform', 'translate(' + xScale(startLongitude) + ', ' + yScale(startLatitude) + ')');
+          .attr('transform', 'translate(' + xScale(startLongitude) + ', ' + yScale(startLatitude) + ') rotate(' + headingScale(0) + ')');
         mowerGroup.append('circle')
           .attr('class', 'lawnmower-body')
           .style('fill', rotorEnabledScale(false))
           .attr('r', radius * 2);
         mowerGroup.append('polygon')
           .attr('class', 'lawnmower-heading')
-          .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0')
-          .attr('transform', 'rotate(' + headingScale(0) + ')');
+          .attr('opacity', 0.5)
+          .attr('points', '0,' + (radius/2) + ' 0,' + (-radius/2) + ' ' + radius + ',0');
 
         var yardTiles = [];
         var updateTile = function(longitude, latitude) {
@@ -137,11 +137,11 @@
             .attr('fill', patchTypeScale(yard.patchType(longitude, latitude)))
             .attr('stroke', patchTypeScale(yard.patchType(longitude, latitude)));
           transition.select('.lawnmower')
-            .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ')');
+            .attr('transform', 'translate(' + xScale(longitude) + ', ' + yScale(latitude) + ') rotate(' + headingScale(mower.heading()) + ')');
           transition.select('.lawnmower-body')
             .style('fill', rotorEnabledScale(mower.rotorEnabled()));
           transition.select('.lawnmower-heading')
-            .attr('transform', 'rotate(' + headingScale(mower.heading()) + ')');
+            .attr('opacity', mower.rotorEnabled() ? 1 : 0.5);
           transition.select('.path')
             .attr('d', lineData)
             .each('end', function() {
