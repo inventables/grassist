@@ -1,6 +1,6 @@
 # Grassist
 
-**Grassist** (_[grass-SIST]_, an undeniably clever portmanteaux of _grass_ and _assist_) is a controller for an autonomous lawnmower.
+**Grassist** (_[grass-SIST]_, an undeniably clever portmanteau of _grass_ and _assist_) is a controller for an autonomous lawnmower.
 
 ## The lawnmower
 
