@@ -13,9 +13,6 @@ describe("planner", function() {
           if (!yard.freshlyCut()) {
             messages.push("Expected planner to cut the whole yard");
           }
-          if (!mower.home()) {
-            messages.push("Expected the lawnmower to be returned to its home position");
-          };
           if (mower.rotorEnabled()) {
             messages.push("Expected the lawnmower's rotor to be powered off");
           }
