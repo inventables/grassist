@@ -47,7 +47,7 @@ We have a visual simulator that will show the behavior of your movement controll
 
 ## Going further
 
-Want to add some additional challenge? The planner Spec includes some specs marked as pending. Feel free to implement any or all of those.
+Want to add some additional challenge? The planner spec includes some specs marked as pending. Feel free to implement any or all of those.
 They add a few new yard elements your code will need to take into account:
 
   - **Sidewalks** — The lawnmower can pass over sidewalks.
