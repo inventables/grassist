@@ -26,13 +26,10 @@ The following status information can be queried:
 Yards can contain the following elements:
   - **Long grass** — The lawnmower can pass over long grass. If the lawnmower passes over a patch of long grass when the is rotor powered on, it will cut the grass patch, making it become short grass.
   - **Short grass** — The lawnmower can pass over short grass.
-  - **Sidewalks** — The lawnmower can pass over sidewalks.
-  - **Mulch and gravel** — The lawnmower can pass over mulch or gravel with rotor powered off, but it _must not_ attempt to pass over mulch or gravel with the rotor powered on or the lawnmower will get damaged.
-  - **Plants and flowers** — The lawnmower _must not_ attempt to pass over plants or flowers at all, regardless of whether or not the rotor is powered on, or the lawnmower and/or landscaping will get damaged.
 
 The following yard information can be queried:
   - `size` — the size of the yard, measured in feet. An array containing two values: the distance from the west edge to the east edge and the distance from the south edge to the north edge.
-  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the west and south edge of the yard. Positive longitude values are to the east and positive latitude values are to the north. One of `"long_grass"`, `"short_grass"`, `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"`.
+  - `patchType(longitude, latitude)` — the type of patch at the specified longitude and latitude. `longitude` and `latitude` are measured in feet, relative to the west and south edge of the yard. Positive longitude values are to the east and positive latitude values are to the north. One of `"long_grass"`, `"short_grass"`.
   - `freshlyCut` — whether or not all of the long grass has been cut. `true` or `false`.
 
 ## The challenge
@@ -41,10 +38,20 @@ Implement the movement controller in **lib/planner.js** such that, given a yard,
   1. All the long grass in the yard gets cut.
   2. The lawnmower is returned to its "home" position with its rotors powered off.
   3. The lawnmower does not leave the bounds of the yard.
-  4. The lawnmower and landscaping do not get damaged.
 
 We have a [Jasmine](http://jasmine.github.io/2.0/introduction.html) test suite with some failing tests. Your task is to get them all passing.
 
 To run the tests, open **jasmine/SpecRunner.html** in your browser.
 
 We have a visual simulator that will show the behavior of your movement controller on the same yards as the test suite. This may be helpful for debugging. To run the simulator, open **simulator/index.html** in your browser.
+
+## Going further
+
+Want to add a little challenge? The planner Spec includes some specs marked as pending. Feel free to implement any or all of those.
+They add a couple new yard elements your code will need to take into account:
+
+  - **Sidewalks** — The lawnmower can pass over sidewalks.
+  - **Mulch and gravel** — The lawnmower can pass over mulch or gravel with rotor powered off, but it _must not_ attempt to pass over mulch or gravel with the rotor powered on or the lawnmower will get damaged.
+  - **Plants and flowers** — The lawnmower _must not_ attempt to pass over plants or flowers at all, regardless of whether or not the rotor is powered on, or the lawnmower and/or landscaping will get damaged.
+  
+  Additionally, `patchType` can now return `"sidewalk"`, `"mulch_gravel"`, or `"plant_flower"` in addition to `"long_grass"` and `"short_grass"`

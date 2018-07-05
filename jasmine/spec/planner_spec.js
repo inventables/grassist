@@ -64,7 +64,8 @@ describe("planner", function() {
     expect(planner).toMow(patches, 0, 0);
   });
 
-  it("should avoid passing over a flower bed", function() {
+  // Change 'xit' -> 'it' to test flower-bed avoidance
+  xit("should avoid passing over a flower bed", function() {
     var patches = [
       "       ",
       "  !!!  ",
@@ -75,7 +76,8 @@ describe("planner", function() {
     expect(planner).toMow(patches, 0, 0);
   });
 
-  it("should avoid gravel when the rotor is enabled", function() {
+  // Change 'xit' -> 'it' to test gravel avoidance
+  xit("should avoid gravel when the rotor is enabled", function() {
     var patches = [
       "!!!!%!!!!",
       "!!!!%!!!!",
@@ -86,7 +88,8 @@ describe("planner", function() {
     expect(planner).toMow(patches, 4, 0);
   });
 
-  it("should mow a complicated yard", function() {
+  // Change 'xit' -> 'it' to test this complicated yard
+  xit("should mow a complicated yard", function() {
     var patches = [
       "!!!!!!!!!!!!!!",
       "!X!!X!!XXXXXX!",
@@ -101,7 +104,8 @@ describe("planner", function() {
     expect(planner).toMow(patches, 0, 4);
   });
 
-  it("should mow a smiling easel", function() {
+  // Change 'xit' -> 'it' to test this shape
+  xit("should mow a smiling easel", function() {
     var patches = [
       "          XX        ",
       "    XXXXXXXXXXXXXX  ",
@@ -121,4 +125,3 @@ describe("planner", function() {
     expect(planner).toMow(patches, 5, 4);
   });
 });
-
