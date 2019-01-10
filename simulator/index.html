@@ -47,6 +47,10 @@
         }
         return 'M' + result + 'Z';
       };
+      
+      var norun = function(patches, startLongitude, startLatitude) {
+        // No-op
+      }
 
       var run = function(patches, startLongitude, startLatitude) {
         var yard = GRASSIST.yard(patches);
@@ -209,21 +213,26 @@
         "!!!!!!!!",
         "!!!!!!!!"
       ], 0, 0);
-      run([
+      
+      // Change 'norun' -> 'run' to run flower-bed avoidance
+      norun([
         "       ",
         "  !!!  ",
         " !!X!! ",
         "  !!!  ",
         "       "
       ], 0, 0);
-      run([
+      
+      // Change 'norun' -> 'run' to run gravel avoidance
+      norun([
         "!!!!%!!!!",
         "!!!!%!!!!",
         "%%%%%%%%%",
         "!!!!%!!!!",
         "!!!!%!!!!"
       ], 4, 0);
-      run([
+      // Change 'norun' -> 'run' to run this complicated shape
+      norun([
         "!!!!!!!!!!!!!!",
         "!X!!X!!XXXXXX!",
         "!X!!X!!!!!!!!!",
@@ -234,7 +243,8 @@
         "!XX!!!!X!!!!X!",
         "!!!!!!!!!!!!!!"
       ], 0, 4);
-      run([
+      // Change 'norun' -> 'run' to run this complicated shape
+      norun([
         "          XX        ",
         "    XXXXXXXXXXXXXX  ",
         "    X!!!!!!!!!!!!X  ",
